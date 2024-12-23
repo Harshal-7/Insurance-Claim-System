@@ -20,7 +20,7 @@ export class ClaimsController {
     return this.claimsService.findClaims(query);
   }
 
-  @Get(':claimId')
+  @Get('detail/:claimId')
   async getClaimById(@Param('claimId') claimId: number): Promise<Claim> {
     return this.claimsService.findClaimById(claimId);
   }
@@ -30,7 +30,7 @@ export class ClaimsController {
     return this.claimsService.createClaim(createClaimDto);
   }
 
-  @Put(':claimId')
+  @Put('detail/:claimId')
   async updateClaimStatus(
     @Param('claimId') claimId: number,
     @Body() updateClaimDto: UpdateClaimDto,

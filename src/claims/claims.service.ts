@@ -17,6 +17,7 @@ export class ClaimsService {
     private readonly userRepository: Repository<User>,
   ) {}
 
+  // Fetch all claims submitted by a user
   async findClaimsByUserId(userId: number): Promise<Claim[]> {
     return this.claimRepository.find({
       where: { user: { user_id: userId } },
@@ -24,6 +25,7 @@ export class ClaimsService {
     });
   }
 
+  // Fetch all claims with filter options
   async findClaims(filter: {
     status?: ClaimStatus;
     claimType?: string;
@@ -43,6 +45,7 @@ export class ClaimsService {
     return query.getMany();
   }
 
+  // Submit a new claim with details and document uploads.
   async createClaim(createClaimDto: CreateClaimDto): Promise<Claim> {
     const { userId, policyId, claimType, amountRequested, documents } =
       createClaimDto;
@@ -60,9 +63,6 @@ export class ClaimsService {
       throw new Error('User or Policy not found');
     }
 
-    console.log('USER : ', user);
-    console.log('policy : ', policy);
-
     const claim = this.claimRepository.create({
       user,
       policy,
@@ -73,11 +73,12 @@ export class ClaimsService {
       documents,
     });
 
-    console.log('claim : ', claim);
+    // console.log('claim : ', claim);
 
-    return this.claimRepository.save(claim);
+    return await this.claimRepository.save(claim);
   }
 
+  // Update the status of a claim (approve/reject) with optional
   async updateClaimStatus(
     claimId: number,
     updateClaimDto: UpdateClaimDto,
@@ -95,8 +96,9 @@ export class ClaimsService {
     return this.claimRepository.save(claim);
   }
 
+  // Fetch detailed information about a specific claim.
   async findClaimById(claimId: number): Promise<Claim> {
-    return this.claimRepository.findOne({
+    return await this.claimRepository.findOne({
       where: { claim_id: claimId },
       relations: ['policy', 'user'],
     });

@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { PoliciesService } from './policies.service';
 import { Policy } from './policies.entity';
 
@@ -17,5 +9,10 @@ export class PoliciesController {
   @Get(':userId')
   async getActivePolicies(@Param('userId') userId: number): Promise<Policy[]> {
     return this.policiesService.findActivePolicies(userId);
+  }
+
+  @Post()
+  async createPolicy(@Body() policy: Partial<Policy>): Promise<Policy> {
+    return await this.policiesService.create(policy);
   }
 }

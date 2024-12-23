@@ -6,6 +6,7 @@ import {
   Column,
   ManyToOne,
   OneToMany,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity('policies')
@@ -17,16 +18,19 @@ export class Policy {
   user: User;
 
   @Column()
+  user_id: number;
+
+  @Column()
   policy_type: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
   premium: number;
 
   @Column()
-  start_date: Date;
+  start_date: string;
 
   @Column()
-  end_date: Date;
+  end_date: string;
 
   @OneToMany(() => Claim, (claim) => claim.policy)
   claims: Claim[];
