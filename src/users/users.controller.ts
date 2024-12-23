@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './users.entity';
+import { DeleteResult } from 'typeorm';
 
 @Controller()
 export class UsersController {
@@ -38,7 +39,7 @@ export class UsersController {
   }
 
   @Delete('users/:id')
-  async delete(@Param('id') id: number): Promise<void> {
+  async delete(@Param('id') id: number): Promise<DeleteResult> {
     return await this.usersService.delete(id);
   }
 }
