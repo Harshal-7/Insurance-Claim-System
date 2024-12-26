@@ -1,69 +1,51 @@
-// import { Controller } from '@nestjs/common';
+import { Controller, Get, Post, Put, Body, Param } from '@nestjs/common';
+import { Claim } from '../claims/claims.entity';
+import { ClaimService } from './claims.service';
 
-// @Controller('claims')
-// export class ClaimsController {}
+@Controller('claims')
+export class ClaimController {
+  constructor(private readonly claimService: ClaimService) {}
 
-import {
-    Controller,
-    Get,
-    Post,
-    Put,
-    Query,
-    Param,
-    Body,
-    NotFoundException,
-  } from '@nestjs/common';
-  import { ClaimsService } from './claims.service';
-  import { Claim } from './claims.entity';
-  
-  @Controller('claims')
-  export class ClaimsController {
-    constructor(private readonly claimsService: ClaimsService) {}
-  
-    // Submit a new claim (Policyholder API)
-    @Post()
-    async create(@Body() claimData: Partial<Claim>): Promise<Claim> {
-      return this.claimsService.create(claimData);
-    }
-  
-    // Fetch all claims with optional filters (Administrator API)
-    @Get()
-    async findAll(
-      @Query('status') status?: string,
-      @Query('type') type?: string,
-      @Query('date') date?: string,
-    ): Promise<Claim[]> {
-      const filters = { status, type, date };
-      return this.claimsService.findAll(filters);
-    }
-  
-    // Fetch detailed information about a specific claim (Administrator API)
-    @Get(':claimId')
-    async findOne(@Param('claimId') claimId: number): Promise<Claim> {
-      return this.claimsService.findOne(claimId);
-    }
-  
-    // Fetch all claims submitted by a specific user (Policyholder API)
-    @Get('/user/:userId')
-    async findByUser(@Param('userId') userId: number): Promise<Claim[]> {
-      return this.claimsService.findByUser(userId);
-    }
-  
-    // Update the status of a claim (Administrator API)
-    @Put(':claimId/status')
-    async updateStatus(
-      @Param('claimId') claimId: number,
-      @Body() updateData: { status: 'approved' | 'rejected'; comments?: string },
-    ): Promise<Claim> {
-      return this.claimsService.updateStatus(claimId, updateData.status, updateData.comments);
-    }
-  
-    // Generate reports based on claims data (Administrator API)
-    @Get('/reports')
-    async generateReports(@Query('groupBy') groupBy: string): Promise<any> {
-      if (!['status', 'claim_type', 'submission_date'].includes(groupBy)) {
-        throw new NotFoundException('Invalid groupBy parameter.');
-      }
-      return this.claimsService.generateReports(groupBy);
-    }
+  // Fetch all active claims for a specific user
+  @Get('/:userId')
+  async getClaimsByUser(@Param('userId') userId: number): Promise<Claim[]> {
+    return this.claimService.getClaimsByUser(userId);
   }
+
+  // Submit a new claim
+  @Post()
+  async createClaim(
+    @Body('user_id') user_id: number,
+    @Body('policy_id') policy_id: number,
+    @Body('claim_type') claim_type: string,
+    @Body('amount_requested') amount_requested: number,
+    @Body('status') status: 'pending' | 'approved' | 'rejected',
+    @Body('documents') documents: any,
+  ): Promise<Claim> {
+    return this.claimService.createClaim(user_id, policy_id, claim_type, amount_requested, status, documents);
+  }
+
+  // Fetch all claims with filter options for administrators
+  @Get()
+  async getAllClaims(
+    @Body('status') status?: 'pending' | 'approved' | 'rejected',
+    @Body('claim_type') claim_type?: string,
+  ): Promise<Claim[]> {
+    return this.claimService.getAllClaims(status, claim_type);
+  }
+
+  // Fetch detailed information about a specific claim
+  @Get('/:claimId')
+  async getClaimById(@Param('claimId') claimId: number): Promise<Claim> {
+    return this.claimService.getClaimById(claimId);
+  }
+
+  // Update the status of a claim
+  @Put('/:claimId')
+  async updateClaimStatus(
+    @Param('claimId') claimId: number,
+    @Body('status') status: 'pending' | 'approved' | 'rejected',
+  ): Promise<Claim> {
+    return this.claimService.updateClaimStatus(claimId, status);
+  }
+}
