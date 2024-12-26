@@ -1,45 +1,44 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Policy } from './policies.entity';
+import { User } from 'src/users/users.entity';
 
 @Injectable()
 export class PoliciesService {
   constructor(
     @InjectRepository(Policy)
-    private readonly policyRepository: Repository<Policy>,
+    private policyRepository: Repository<Policy>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
+  // Create a new Policy
   async create(policy: Partial<Policy>): Promise<Policy> {
-    const newPolicy = this.policyRepository.create(policy);
+    // Fetch the user using the user_id to establish the relationship properly
+    const user = await this.userRepository.findOne({
+      where: { user_id: policy.user_id }, // Find the user by user_id
+    });
+
+    if (!user) {
+      throw new Error('User not found'); // Handle error if user does not exist
+    }
+
+    const newPolicy = this.policyRepository.create({
+      ...policy,
+      user,
+    });
+
+    // Save and return the new policy
     return await this.policyRepository.save(newPolicy);
   }
 
-  async findAll(): Promise<Policy[]> {
-    return await this.policyRepository.find({ relations: ['user'] });
-  }
-
-  async findOne(policyId: number): Promise<Policy> {
-    const policy = await this.policyRepository.findOne({
-      where: { policy_id: policyId },
-      relations: ['user'],
+  // Get all active policies for user
+  async findActivePolicies(userId: number): Promise<Policy[]> {
+    return await this.policyRepository.find({
+      where: {
+        user_id: userId,
+      },
     });
-    if (!policy) {
-      throw new NotFoundException(`Policy with ID ${policyId} not found.`);
-    }
-    return policy;
-  }
-
-  async update(policyId: number, updates: Partial<Policy>): Promise<Policy> {
-    const policy = await this.findOne(policyId);
-    Object.assign(policy, updates);
-    return await this.policyRepository.save(policy);
-  }
-
-  async delete(policyId: number): Promise<void> {
-    const result = await this.policyRepository.delete(policyId);
-    if (result.affected === 0) {
-      throw new NotFoundException(`Policy with ID ${policyId} not found.`);
-    }
   }
 }

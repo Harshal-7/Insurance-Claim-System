@@ -9,27 +9,28 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './users.entity';
+import { DeleteResult } from 'typeorm';
 
-@Controller('users')
+@Controller()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
+  @Post('register')
   async create(@Body() user: Partial<User>): Promise<User> {
     return await this.usersService.create(user);
   }
 
-  @Get()
+  @Get('users')
   async findAll(): Promise<User[]> {
     return await this.usersService.findAll();
   }
 
-  @Get(':id')
+  @Get('users/:id')
   async findOne(@Param('id') id: number): Promise<User> {
     return await this.usersService.findOne(id);
   }
 
-  @Put(':id')
+  @Put('users/:id')
   async update(
     @Param('id') id: number,
     @Body() updates: Partial<User>,
@@ -37,8 +38,8 @@ export class UsersController {
     return await this.usersService.update(id, updates);
   }
 
-  @Delete(':id')
-  async delete(@Param('id') id: number): Promise<void> {
+  @Delete('users/:id')
+  async delete(@Param('id') id: number): Promise<DeleteResult> {
     return await this.usersService.delete(id);
   }
 }
