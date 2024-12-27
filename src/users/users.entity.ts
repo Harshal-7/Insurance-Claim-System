@@ -1,17 +1,18 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Claim } from 'src/claims/claims.entity';
+import { Policy } from 'src/policies/policies.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+
+export enum UserRole {
+  POLICYHOLDER = 'policyholder',
+  ADMIN = 'admin',
+}
 
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
   user_id: number;
 
-  @Column({ length: 255 })
+  @Column()
   name: string;
 
   @Column({ unique: true })
@@ -20,12 +21,12 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ type: 'enum', enum: ['policyholder', 'admin'] })
-  role: 'policyholder' | 'admin';
+  @Column({ type: 'enum', enum: UserRole })
+  role: UserRole;
 
-  @CreateDateColumn()
-  created_at: Date;
+  @OneToMany(() => Policy, (policy) => policy.user)
+  policies: Policy[];
 
-  @UpdateDateColumn()
-  updated_at: Date;
+  @OneToMany(() => Claim, (claim) => claim.user)
+  claims: Claim[];
 }
