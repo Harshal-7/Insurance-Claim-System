@@ -38,7 +38,9 @@
 
 import { Policy } from 'src/policies/policies.entity';
 import { User } from 'src/users/users.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { IsEnum } from 'class-validator';
+// import { AuditLog } from 'src/audit-log/audit-log.entity'; 
 
 export enum ClaimStatus {
   PENDING = 'pending',
@@ -50,6 +52,9 @@ export enum ClaimStatus {
 export class Claim {
   @PrimaryGeneratedColumn()
   claim_id: number;
+
+  // @OneToMany(() => AuditLog, (log) => log.claim)  // Add the OneToMany relationship
+  // auditLogs: AuditLog[];
 
   @ManyToOne(() => Policy, (policy) => policy.claims)
   policy: Policy;
@@ -63,11 +68,14 @@ export class Claim {
   @Column('decimal', { precision: 10, scale: 2 })
   amount_requested: number;
 
-  @Column({ type: 'enum', enum: ClaimStatus })
+  @Column({ type: 'enum', enum: ClaimStatus,default: ClaimStatus.PENDING })
   status: ClaimStatus;
 
   @Column()
   submission_date: Date;
+
+  @Column()
+  details: string;
 
   @Column('text')
   documents: string;

@@ -63,6 +63,7 @@ export class UsersController {
 
   @Post('register')
   async create(@Body() user: Partial<User>): Promise<User> {
+    console.log("inside regsiter");
     return await this.usersService.create(user);
   }
 

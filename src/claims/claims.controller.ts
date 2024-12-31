@@ -51,7 +51,7 @@ export class ClaimsController {
   constructor(private readonly claimsService: ClaimsService) {}
 
   // Create a new claim
-  @Post()
+  @Post('new-user')
   async create(@Body() createClaimDto: CreateClaimDto): Promise<Claim> {
     return this.claimsService.createClaim(createClaimDto);
   }
@@ -81,4 +81,13 @@ export class ClaimsController {
   ): Promise<Claim> {
     return this.claimsService.updateClaimStatus(claimId, updateClaimDto);
   }
+
+  // @Put(':claimId/status')
+  // async updateStatus(
+  //   @Param('claimId') claimId: number,
+  //   @Body() updateClaimDto: UpdateClaimDto, 
+  // ): Promise<Claim> {
+  //   const { status, performedBy } = updateClaimDto;  // Extract 'status' and 'performedBy' from the request body
+  //   return this.claimsService.updateClaimStatus(claimId, status, performedBy);  // Pass all required arguments
+  // }
 }

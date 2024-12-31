@@ -26,3 +26,13 @@ export class CreateClaimDto {
 export class UpdateClaimDto {
   status: ClaimStatus;        
 }
+
+// export class UpdateClaimDto {
+//   @IsEnum(ClaimStatus)
+//   @IsNotEmpty()
+//   status: ClaimStatus;
+
+//   @IsString()
+//   @IsNotEmpty()
+//   performedBy: string;  
+// }
