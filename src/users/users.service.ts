@@ -21,20 +21,20 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
-  // Fetch a single user by ID
-  async findOne(userId: number): Promise<User> {
+  // Fetch a single user by email
+  async findOne(email: string): Promise<User> {
     const user = await this.userRepository.findOne({
-      where: { user_id: userId },
+      where: { email: email },
     });
     if (!user) {
-      throw new NotFoundException(`User with ID ${userId} not found.`);
+      throw new NotFoundException(`User with email ${email} not found.`);
     }
     return user;
   }
 
   // Update a user by ID
-  async update(userId: number, updates: Partial<User>): Promise<User> {
-    const user = await this.findOne(userId); // Ensure user exists
+  async update(email: string, updates: Partial<User>): Promise<User> {
+    const user = await this.findOne(email); // Ensure user exists
     Object.assign(user, updates);
     return await this.userRepository.save(user);
   }

@@ -63,7 +63,7 @@ export class UsersController {
 
   @Post('register')
   async create(@Body() user: Partial<User>): Promise<User> {
-    console.log("inside regsiter");
+    console.log('inside regsiter');
     return await this.usersService.create(user);
   }
 
@@ -72,17 +72,17 @@ export class UsersController {
     return await this.usersService.findAll();
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: number): Promise<User> {
-    return await this.usersService.findOne(id);
+  @Get(':email')
+  async findOne(@Param('email') email: string): Promise<User> {
+    return await this.usersService.findOne(email);
   }
 
-  @Put(':id')
+  @Put(':email')
   async update(
-    @Param('id') id: number,
+    @Param('email') email: string,
     @Body() updates: Partial<User>,
   ): Promise<User> {
-    return await this.usersService.update(id, updates);
+    return await this.usersService.update(email, updates);
   }
 
   @Delete(':id')
